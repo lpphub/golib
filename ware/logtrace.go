@@ -1,12 +1,12 @@
-package middleware
+package ware
 
 import (
 	"bytes"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/lpphub/golib/zlog"
 	"go.uber.org/zap"
-	"golib/zlog"
 	"io"
 	"strings"
 	"unsafe"

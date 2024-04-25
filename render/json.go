@@ -3,7 +3,7 @@ package render
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"golib/zlog"
+	"github.com/lpphub/golib/zlog"
 	"net/http"
 )
 
@@ -51,5 +51,5 @@ func JsonWithError(ctx *gin.Context, err error) {
 }
 
 func commonHeader(ctx *gin.Context) {
-	ctx.Header(zlog.KeyHeaderLogId, zlog.GetLogId(ctx))
+	zlog.SetHeaderLogId(ctx)
 }

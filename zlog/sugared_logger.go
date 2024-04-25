@@ -9,17 +9,7 @@ const (
 	sugaredLoggerAddr = "_sugared_addr"
 )
 
-func GetLogger(lc LogConf) *zap.SugaredLogger {
-	if SugaredLogger == nil {
-		if ZapLogger == nil {
-			ZapLogger = newLogger(lc).WithOptions(zap.AddCallerSkip(1))
-		}
-		SugaredLogger = ZapLogger.Sugar()
-	}
-	return SugaredLogger
-}
-
-func sugaredLogger(ctx *gin.Context) *zap.SugaredLogger {
+func sugaredLoggerWithCtx(ctx *gin.Context) *zap.SugaredLogger {
 	if ctx == nil {
 		return SugaredLogger
 	}
@@ -37,41 +27,41 @@ func sugaredLogger(ctx *gin.Context) *zap.SugaredLogger {
 }
 
 func Debug(ctx *gin.Context, args ...interface{}) {
-	sugaredLogger(ctx).Debug(args...)
+	sugaredLoggerWithCtx(ctx).Debug(args...)
 }
 
 func Debugf(ctx *gin.Context, format string, args ...interface{}) {
-	sugaredLogger(ctx).Debugf(format, args...)
+	sugaredLoggerWithCtx(ctx).Debugf(format, args...)
 }
 
 func Info(ctx *gin.Context, args ...interface{}) {
-	sugaredLogger(ctx).Info(args...)
+	sugaredLoggerWithCtx(ctx).Info(args...)
 }
 
 func Infof(ctx *gin.Context, format string, args ...interface{}) {
-	sugaredLogger(ctx).Infof(format, args...)
+	sugaredLoggerWithCtx(ctx).Infof(format, args...)
 }
 
 func Warn(ctx *gin.Context, args ...interface{}) {
-	sugaredLogger(ctx).Warn(args...)
+	sugaredLoggerWithCtx(ctx).Warn(args...)
 }
 
 func Warnf(ctx *gin.Context, format string, args ...interface{}) {
-	sugaredLogger(ctx).Warnf(format, args...)
+	sugaredLoggerWithCtx(ctx).Warnf(format, args...)
 }
 
 func Error(ctx *gin.Context, args ...interface{}) {
-	sugaredLogger(ctx).Error(args...)
+	sugaredLoggerWithCtx(ctx).Error(args...)
 }
 
 func Errorf(ctx *gin.Context, format string, args ...interface{}) {
-	sugaredLogger(ctx).Errorf(format, args...)
+	sugaredLoggerWithCtx(ctx).Errorf(format, args...)
 }
 
 func Fatal(ctx *gin.Context, args ...interface{}) {
-	sugaredLogger(ctx).Fatal(args...)
+	sugaredLoggerWithCtx(ctx).Fatal(args...)
 }
 
 func Fatalf(ctx *gin.Context, format string, args ...interface{}) {
-	sugaredLogger(ctx).Fatalf(format, args...)
+	sugaredLoggerWithCtx(ctx).Fatalf(format, args...)
 }

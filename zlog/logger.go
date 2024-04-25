@@ -46,12 +46,12 @@ func defaultLogConf() *LogConf {
 	}
 }
 
-func GetLogConfWithOpts(opts ...LogOption) *LogConf {
+func GetLogConfWithOpts(opts ...LogOption) LogConf {
 	lc := defaultLogConf()
 	for _, apply := range opts {
 		apply(lc)
 	}
-	return lc
+	return *lc
 }
 
 func newLogger(lc LogConf) *zap.Logger {

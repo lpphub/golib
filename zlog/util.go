@@ -30,6 +30,10 @@ func GetLogId(ctx *gin.Context) string {
 	return logId
 }
 
+func SetHeaderLogId(ctx *gin.Context) {
+	ctx.Header(KeyHeaderLogId, GetLogId(ctx))
+}
+
 func generateLogId() string {
 	return strconv.FormatUint(uint64(time.Now().UnixNano())&0x7FFFFFFF|0x80000000, 10)
 }
