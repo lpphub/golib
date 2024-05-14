@@ -11,11 +11,11 @@ type BootstrapConf struct {
 }
 
 func Bootstrap(app *gin.Engine, opt BootstrapConf) {
-	app.Use(gin.CustomRecovery(opt.CustomRecovery))
-
 	if opt.OpenTrace {
 		app.Use(LogTrace())
 	}
+
+	app.Use(gin.CustomRecovery(opt.CustomRecovery))
 
 	if opt.Cors {
 		app.Use(Cors())
