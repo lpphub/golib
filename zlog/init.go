@@ -14,9 +14,9 @@ func InitLog(opts ...LogOption) {
 
 	if SugaredLogger == nil {
 		if ZapLogger == nil {
-			ZapLogger = newLogger(lc).WithOptions(zap.AddCallerSkip(1))
+			ZapLogger = newLogger(lc)
 		}
-		SugaredLogger = ZapLogger.Sugar()
+		SugaredLogger = ZapLogger.WithOptions(zap.AddCaller(), zap.AddCallerSkip(1)).Sugar()
 	}
 }
 

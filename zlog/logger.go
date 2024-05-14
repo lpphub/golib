@@ -56,7 +56,7 @@ func GetLogConfWithOpts(opts ...LogOption) LogConf {
 
 func newLogger(lc LogConf) *zap.Logger {
 	core := zapcore.NewCore(getLogEncoder(), getLogWriter(lc), getLogLevel(lc.Level))
-	return zap.New(core, zap.WithCaller(true))
+	return zap.New(core)
 }
 
 func getLogEncoder() zapcore.Encoder {

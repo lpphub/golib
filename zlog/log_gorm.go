@@ -27,7 +27,7 @@ func NewGormLogger(db, addr string) logger.Interface {
 		Database:  db,
 		Addr:      addr,
 		MaxSqlLen: 200,
-		logger:    ZapLogger.WithOptions(zap.AddCallerSkip(2)),
+		logger:    ZapLogger.WithOptions(zap.AddCaller(), zap.AddCallerSkip(2)),
 	}
 }
 
