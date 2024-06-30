@@ -15,21 +15,21 @@ import (
 const _bodyLength = 1024
 
 func LogTrace() gin.HandlerFunc {
-	return func(c *gin.Context) {
+	return func(ctx *gin.Context) {
 		var (
-			logId = zlog.GetLogId(c)
+			logId = zlog.GetLogId(ctx)
 
 			reqBody  string
 			respBody string
 		)
 
-		resp := &respWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
-		c.Writer = resp
+		resp := &respWriter{body: bytes.NewBufferString(""), ResponseWriter: ctx.Writer}
+		ctx.Writer = resp
 
 		// 请求参数，涉及到回写，要在处理业务逻辑之前
-		reqBody = getReqBody(c, _bodyLength)
+		reqBody = getReqBody(ctx, _bodyLength)
 
-		c.Next()
+		ctx.Next()
 
 		if resp.body != nil {
 			respBody = resp.body.String()
@@ -40,9 +40,10 @@ func LogTrace() gin.HandlerFunc {
 
 		fields := []zap.Field{
 			zap.String("logId", logId),
-			zap.String("url", c.Request.URL.Path),
-			zap.String("reqBody", reqBody),
-			zap.String("respBody", respBody),
+			zap.String("url", ctx.Request.URL.Path),
+			zap.Int("status", resp.Status()),
+			zap.String("request", reqBody),
+			zap.String("response", respBody),
 		}
 		zlog.ZapLogger.Info("trace...", fields...)
 	}
@@ -70,33 +71,34 @@ func (w respWriter) Write(b []byte) (int, error) {
 // 请求参数
 func getReqBody(c *gin.Context, maxReqBodyLen int) (reqBody string) {
 	if maxReqBodyLen == -1 {
-		return reqBody
+		return
 	}
 
-	if c.Request.Body != nil && c.ContentType() == binding.MIMEMultipartPOSTForm {
-		requestBody, err := c.GetRawData()
-		if err != nil {
-			zlog.Warn(c, "get http request body error: "+err.Error())
+	if c.Request.Body != nil {
+		if c.ContentType() == binding.MIMEMultipartPOSTForm {
+			requestBody, err := c.GetRawData()
+			if err != nil {
+				zlog.Warn(c, "get http request body error: "+err.Error())
+			}
+			// 回写数据
+			c.Request.Body = io.NopCloser(bytes.NewBuffer(requestBody))
+			if _, err := c.MultipartForm(); err != nil {
+				zlog.Warn(c, "parse http request form body error: "+err.Error())
+			}
+			reqBody = c.Request.PostForm.Encode()
+			// 回写数据
+			c.Request.Body = io.NopCloser(bytes.NewBuffer(requestBody))
+		} else if c.ContentType() == "application/octet-stream" {
+			// ignore
+		} else {
+			requestBody, err := c.GetRawData()
+			if err != nil {
+				zlog.Warn(c, "get http request body error: "+err.Error())
+			}
+			reqBody = bytesToStr(requestBody)
+			// 回写数据
+			c.Request.Body = io.NopCloser(bytes.NewBuffer(requestBody))
 		}
-		c.Request.Body = io.NopCloser(bytes.NewBuffer(requestBody))
-
-		if _, err := c.MultipartForm(); err != nil {
-			zlog.Warn(c, "parse http request form body error: "+err.Error())
-		}
-		reqBody = c.Request.PostForm.Encode()
-
-		// 回写参数
-		c.Request.Body = io.NopCloser(bytes.NewBuffer(requestBody))
-
-	} else if c.Request.Body != nil && c.ContentType() == "application/octet-stream" {
-
-	} else if c.Request.Body != nil {
-		requestBody, err := c.GetRawData()
-		if err != nil {
-			zlog.Warn(c, "get http request body error: "+err.Error())
-		}
-		reqBody = string(requestBody)
-		c.Request.Body = io.NopCloser(bytes.NewBuffer(requestBody))
 	}
 
 	if c.Request.URL.RawQuery != "" {
