@@ -5,13 +5,13 @@ import (
 )
 
 type BootstrapConf struct {
-	OpenTrace      bool
+	LogTrace       bool
 	Cors           bool
 	CustomRecovery gin.RecoveryFunc
 }
 
 func Bootstrap(app *gin.Engine, opt BootstrapConf) {
-	if opt.OpenTrace {
+	if opt.LogTrace {
 		app.Use(LogTrace())
 	}
 
