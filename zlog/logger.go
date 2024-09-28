@@ -39,6 +39,11 @@ func WithBufFlushInterval(interval time.Duration) LogOption {
 		opt.BufFlushInterval = interval
 	}
 }
+func WithLogPath(logPath string) LogOption {
+	return func(opt *LogConf) {
+		opt.LogPath = logPath
+	}
+}
 
 func defaultLogConf() *LogConf {
 	return &LogConf{
