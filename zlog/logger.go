@@ -3,6 +3,8 @@ package zlog
 import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"gopkg.in/natefinch/lumberjack.v2"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -13,6 +15,7 @@ type LogConf struct {
 	BufSwitch        bool
 	BufSize          int
 	BufFlushInterval time.Duration
+	LogPath          string
 }
 type LogOption func(*LogConf)
 
@@ -76,7 +79,18 @@ func getLogEncoder() zapcore.Encoder {
 }
 
 func getLogWriter(conf LogConf) (ws zapcore.WriteSyncer) {
-	w := os.Stdout
+	var w io.Writer
+	if conf.LogPath != "" {
+		w = &lumberjack.Logger{
+			Filename:   conf.LogPath,
+			MaxSize:    100, // megabytess
+			MaxBackups: 5,
+			MaxAge:     14,   // days
+			Compress:   true, // disabled by default
+		}
+	} else {
+		w = os.Stdout
+	}
 	if !conf.BufSwitch {
 		return zapcore.AddSync(w)
 	}
