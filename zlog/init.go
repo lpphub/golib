@@ -11,7 +11,6 @@ var (
 
 func InitLog(opts ...LogOption) {
 	lc := GetLogConfWithOpts(opts...)
-
 	if SugaredLogger == nil {
 		if ZapLogger == nil {
 			ZapLogger = newLogger(lc)
