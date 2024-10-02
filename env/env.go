@@ -24,13 +24,9 @@ func GetRootPath() string {
 	}
 }
 
-func GetConfDirPath() string {
-	return filepath.Join(GetRootPath(), "conf")
-}
-
 func LoadConf(filename, subConf string, s interface{}) {
 	var path string
-	path = filepath.Join(GetConfDirPath(), subConf, filename)
+	path = filepath.Join(GetRootPath(), subConf, filename)
 
 	if yamlFile, err := os.ReadFile(path); err != nil {
 		panic(filename + " read error: " + err.Error())
