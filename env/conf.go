@@ -5,24 +5,6 @@ import (
 	"path/filepath"
 )
 
-const DefaultRootPath = "."
-
-var (
-	rootPath string
-)
-
-func SetRootPath(r string) {
-	rootPath = r
-}
-
-func GetRootPath() string {
-	if rootPath != "" {
-		return rootPath
-	} else {
-		return DefaultRootPath
-	}
-}
-
 func LoadConf(filename string, s interface{}) {
 	path := filepath.Join(GetRootPath(), filename)
 
