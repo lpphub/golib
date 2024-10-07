@@ -37,9 +37,10 @@ func Bootstrap(app *gin.Engine, opt BootstrapConf) {
 func ListenAndServe(srv *http.Server) {
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalf("listen: %s\n", err)
+			log.Fatalf("listen to serve err: %s\n", err)
 		}
 	}()
+	log.Printf("Listening and serving HTTP on %s\n", srv.Addr)
 
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
