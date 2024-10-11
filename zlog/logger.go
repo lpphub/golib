@@ -15,7 +15,7 @@ type LogConf struct {
 	BufSwitch        bool
 	BufSize          int
 	BufFlushInterval time.Duration
-	LogPath          string
+	LogFilePath      string
 }
 type LogOption func(*LogConf)
 
@@ -39,9 +39,9 @@ func WithBufFlushInterval(interval time.Duration) LogOption {
 		opt.BufFlushInterval = interval
 	}
 }
-func WithLogPath(logPath string) LogOption {
+func WithLogFilePath(LogFilePath string) LogOption {
 	return func(opt *LogConf) {
-		opt.LogPath = logPath
+		opt.LogFilePath = LogFilePath
 	}
 }
 
@@ -85,10 +85,10 @@ func getLogEncoder() zapcore.Encoder {
 
 func getLogWriter(conf LogConf) (ws zapcore.WriteSyncer) {
 	var w io.Writer
-	if conf.LogPath != "" {
+	if conf.LogFilePath != "" {
 		w = &lumberjack.Logger{
-			Filename:   conf.LogPath,
-			MaxSize:    100, // megabytess
+			Filename:   conf.LogFilePath,
+			MaxSize:    200,
 			MaxBackups: 5,
 			MaxAge:     14,   // days
 			Compress:   true, // disabled by default
