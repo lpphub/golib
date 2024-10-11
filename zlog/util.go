@@ -8,7 +8,7 @@ import (
 
 const (
 	KeyCtxLogId    = "ctx_logId"
-	KeyHeaderLogId = "X-Trace-Id"
+	KeyHeaderLogId = "X-Trace-logId"
 )
 
 func GetLogId(ctx *gin.Context) string {

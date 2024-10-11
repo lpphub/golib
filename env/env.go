@@ -34,7 +34,6 @@ func init() {
 		runEnv = RunEnvDev
 		RunMode = gin.DebugMode
 	}
-	gin.SetMode(RunMode)
 }
 
 func SetRootPath(r string) {
