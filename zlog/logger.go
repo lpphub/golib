@@ -1,27 +1,41 @@
 package zlog
 
 import (
+	"fmt"
+	"github.com/lpphub/golib/env"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
 
+const (
+	_logInfo   = "info"
+	_logError  = "error"
+	_logStdout = "stdout"
+)
+
 type LogConf struct {
-	Level            string
+	LogLevel         string
+	LogPath          string
 	BufSwitch        bool
 	BufSize          int
 	BufFlushInterval time.Duration
-	LogFilePath      string
 }
 type LogOption func(*LogConf)
 
-func WithLevel(lv string) LogOption {
+func WithLogLevel(lv string) LogOption {
 	return func(opt *LogConf) {
-		opt.Level = lv
+		opt.LogLevel = lv
+	}
+}
+func WithLogPath(LogPath string) LogOption {
+	return func(opt *LogConf) {
+		opt.LogPath = LogPath
 	}
 }
 func WithBufSwitch(sw bool) LogOption {
@@ -39,32 +53,42 @@ func WithBufFlushInterval(interval time.Duration) LogOption {
 		opt.BufFlushInterval = interval
 	}
 }
-func WithLogFilePath(LogFilePath string) LogOption {
-	return func(opt *LogConf) {
-		opt.LogFilePath = LogFilePath
-	}
-}
 
 func defaultLogConf() *LogConf {
 	return &LogConf{
-		Level:            "INFO",
+		LogLevel:         "INFO",
 		BufSwitch:        true,
 		BufSize:          128 * 1024, // 128kb
 		BufFlushInterval: 3 * time.Second,
 	}
 }
 
-func GetLogConfWithOpts(opts ...LogOption) LogConf {
+func GetLogConfWithOpts(opts ...LogOption) *LogConf {
 	lc := defaultLogConf()
 	for _, apply := range opts {
 		apply(lc)
 	}
-	return *lc
+	return lc
 }
 
-func newLogger(lc LogConf) *zap.Logger {
-	core := zapcore.NewCore(getLogEncoder(), getLogWriter(lc), getLogLevel(lc.Level))
-	return zap.New(core)
+func newLogger() *zap.Logger {
+	infoLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl >= zapcore.InfoLevel && lvl >= getLogLevel(logConf.LogLevel)
+	})
+	errorLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl >= zapcore.ErrorLevel && lvl >= getLogLevel(logConf.LogLevel)
+	})
+
+	if logConf.LogPath != "" {
+		core := zapcore.NewTee(
+			zapcore.NewCore(getLogEncoder(), getLogWriter(_logInfo), infoLevel),
+			zapcore.NewCore(getLogEncoder(), getLogWriter(_logError), errorLevel),
+		)
+		return zap.New(core)
+	}
+
+	// 控制台输出
+	return zap.New(zapcore.NewCore(getLogEncoder(), getLogWriter(_logStdout), getLogLevel(logConf.LogLevel)))
 }
 
 func getLogEncoder() zapcore.Encoder {
@@ -83,27 +107,32 @@ func getLogEncoder() zapcore.Encoder {
 	return zapcore.NewJSONEncoder(encoderCfg)
 }
 
-func getLogWriter(conf LogConf) (ws zapcore.WriteSyncer) {
+func getLogWriter(logType string) (ws zapcore.WriteSyncer) {
 	var w io.Writer
-	if conf.LogFilePath != "" {
+	if logType == _logStdout {
+		w = os.Stdout
+	} else {
+		app := env.AppName
+		if app == "" {
+			app = "server"
+		}
+		filename := filepath.Join(strings.TrimSuffix(logConf.LogPath, "/"), fmt.Sprintf("%s_%s.log", app, logType))
 		w = &lumberjack.Logger{
-			Filename:   conf.LogFilePath,
+			Filename:   filename,
 			MaxSize:    200,
 			MaxBackups: 5,
 			MaxAge:     14,   // days
 			Compress:   true, // disabled by default
 		}
-	} else {
-		w = os.Stdout
 	}
-	if !conf.BufSwitch {
+	if !logConf.BufSwitch {
 		return zapcore.AddSync(w)
 	}
 	// 开启缓冲区
 	return &zapcore.BufferedWriteSyncer{
 		WS:            zapcore.AddSync(w),
-		Size:          conf.BufSize,
-		FlushInterval: conf.BufFlushInterval,
+		Size:          logConf.BufSize,
+		FlushInterval: logConf.BufFlushInterval,
 	}
 }
 

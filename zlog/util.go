@@ -7,15 +7,15 @@ import (
 )
 
 const (
-	KeyContextLogId = "ctx_logId"
-	KeyHeaderLogId  = "X-Trace-logId"
+	KeyCtxLogId    = "ctx_logId"
+	KeyHeaderLogId = "X-Trace-Id"
 )
 
 func GetLogId(ctx *gin.Context) string {
 	if ctx == nil {
 		return generateLogId()
 	}
-	if logId := ctx.GetString(KeyContextLogId); logId != "" {
+	if logId := ctx.GetString(KeyCtxLogId); logId != "" {
 		return logId
 	}
 	// 尝试从header中获取
@@ -26,7 +26,7 @@ func GetLogId(ctx *gin.Context) string {
 	if logId == "" {
 		logId = generateLogId()
 	}
-	ctx.Set(KeyContextLogId, logId)
+	ctx.Set(KeyCtxLogId, logId)
 	return logId
 }
 

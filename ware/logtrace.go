@@ -45,7 +45,7 @@ func LogTrace() gin.HandlerFunc {
 			zap.String("request", reqBody),
 			zap.String("response", respBody),
 		}
-		zlog.ZapLogger.Info("trace...", fields...)
+		zlog.ZapLogger.Info("tracing...", fields...)
 	}
 }
 

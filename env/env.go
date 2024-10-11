@@ -15,6 +15,7 @@ const (
 )
 
 var (
+	AppName string
 	RunMode string
 
 	runEnv   string
@@ -38,6 +39,10 @@ func init() {
 
 func SetRootPath(r string) {
 	rootPath = r
+}
+
+func SetAppName(appName string) {
+	AppName = appName
 }
 
 func GetRunEnv() string {
