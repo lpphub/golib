@@ -1,9 +1,9 @@
 package render
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/lpphub/golib/zlog"
+	"github.com/pkg/errors"
 	"net/http"
 )
 
@@ -23,21 +23,7 @@ func JsonWithSuccess(ctx *gin.Context, data interface{}) {
 	ctx.JSON(http.StatusOK, r)
 }
 
-func JsonWithFail(ctx *gin.Context, code int, msg string) {
-	r := &JsonRender{
-		Errno:  code,
-		ErrMsg: msg,
-	}
-	commonHeader(ctx)
-	ctx.JSON(http.StatusOK, r)
-}
-
-func JsonAbortWithFail(ctx *gin.Context, code int, msg string) {
-	ctx.Abort()
-	JsonWithFail(ctx, code, msg)
-}
-
-func JsonAbortWithError(ctx *gin.Context, err error) {
+func JsonWithError(ctx *gin.Context, err error) {
 	code, msg := -1, err.Error()
 
 	var err2 Error
@@ -52,6 +38,20 @@ func JsonAbortWithError(ctx *gin.Context, err error) {
 	}
 	commonHeader(ctx)
 	ctx.AbortWithStatusJSON(http.StatusOK, r)
+}
+
+func JsonWithFail(ctx *gin.Context, code int, msg string) {
+	r := &JsonRender{
+		Errno:  code,
+		ErrMsg: msg,
+	}
+	commonHeader(ctx)
+	ctx.JSON(http.StatusOK, r)
+}
+
+func JsonAbortWithFail(ctx *gin.Context, code int, msg string) {
+	ctx.Abort()
+	JsonWithFail(ctx, code, msg)
 }
 
 func commonHeader(ctx *gin.Context) {
