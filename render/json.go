@@ -32,7 +32,12 @@ func JsonWithFail(ctx *gin.Context, code int, msg string) {
 	ctx.JSON(http.StatusOK, r)
 }
 
-func JsonWithError(ctx *gin.Context, err error) {
+func JsonAbortWithFail(ctx *gin.Context, code int, msg string) {
+	ctx.Abort()
+	JsonWithFail(ctx, code, msg)
+}
+
+func JsonAbortWithError(ctx *gin.Context, err error) {
 	code, msg := -1, err.Error()
 
 	var err2 Error
