@@ -15,7 +15,7 @@ type JsonRender struct {
 
 func JsonWithSuccess(ctx *gin.Context, data interface{}) {
 	r := &JsonRender{
-		Errno:  0,
+		Errno:  1,
 		ErrMsg: "success",
 		Data:   data,
 	}
