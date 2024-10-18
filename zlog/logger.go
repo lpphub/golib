@@ -121,8 +121,8 @@ func getLogWriter(logType string) (ws zapcore.WriteSyncer) {
 			Filename:   filename,
 			MaxSize:    200,
 			MaxBackups: 5,
-			MaxAge:     14,   // days
-			Compress:   true, // disabled by default
+			MaxAge:     14,    // days
+			Compress:   false, // disabled by default
 		}
 	}
 	if !logConf.BufSwitch {
