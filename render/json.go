@@ -1,10 +1,12 @@
 package render
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/lpphub/golib/zlog"
 	"github.com/pkg/errors"
 	"net/http"
+	"time"
 )
 
 type JsonRender struct {
@@ -56,4 +58,5 @@ func JsonAbortWithFail(ctx *gin.Context, code int, msg string) {
 
 func commonHeader(ctx *gin.Context) {
 	zlog.SetHeaderLogId(ctx)
+	ctx.Header("X-Resp-Time", fmt.Sprintf("%d", time.Now().Unix()))
 }
