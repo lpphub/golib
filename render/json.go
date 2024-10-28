@@ -58,5 +58,5 @@ func JsonAbortWithFail(ctx *gin.Context, code int, msg string) {
 
 func commonHeader(ctx *gin.Context) {
 	zlog.SetHeaderLogId(ctx)
-	ctx.Header("X-Resp-Time", fmt.Sprintf("%d", time.Now().Unix()))
+	ctx.Header("X-Resp-Time", fmt.Sprintf("%d", time.Now().UnixMilli()))
 }
