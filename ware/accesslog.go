@@ -13,28 +13,28 @@ import (
 	"unsafe"
 )
 
-type TraceLogConfig struct {
-	Enable      bool
-	IgnorePaths []string
+type AccessLogConfig struct {
+	Enable    bool
+	SkipPaths []string
 }
 
 const _bodyLength = 2048
 
-func TraceLog(conf TraceLogConfig) gin.HandlerFunc {
+func AccessLog(conf AccessLogConfig) gin.HandlerFunc {
 	var (
-		ignorePaths = conf.IgnorePaths
-		ignoreMap   = make(map[string]struct{})
+		skipPaths = conf.SkipPaths
+		skipMap   = make(map[string]struct{})
 	)
-	if length := len(ignorePaths); length > 0 {
-		ignoreMap = make(map[string]struct{}, length)
-		for _, path := range ignorePaths {
-			ignoreMap[path] = struct{}{}
+	if length := len(skipPaths); length > 0 {
+		skipMap = make(map[string]struct{}, length)
+		for _, path := range skipPaths {
+			skipMap[path] = struct{}{}
 		}
 	}
 
 	return func(ctx *gin.Context) {
 		path := ctx.Request.URL.Path
-		if _, ok := ignoreMap[path]; ok {
+		if _, ok := skipMap[path]; ok {
 			return
 		}
 
@@ -72,7 +72,7 @@ func TraceLog(conf TraceLogConfig) gin.HandlerFunc {
 			zap.String("request", reqBody),
 			zap.String("response", respBody),
 		}
-		zlog.ZapLogger.Info("tracing...", fields...)
+		zlog.ZapLogger.Info("access log", fields...)
 	}
 }
 
