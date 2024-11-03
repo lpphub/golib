@@ -14,7 +14,7 @@ import (
 )
 
 type BootstrapConf struct {
-	TraceLog       TraceLogConfig
+	AccessLog      AccessLogConfig
 	CustomRecovery gin.RecoveryFunc
 	Cors           bool
 }
@@ -23,8 +23,8 @@ func Bootstraps(app *gin.Engine, opt BootstrapConf) {
 	gin.SetMode(env.RunMode)
 
 	// 中间件
-	if opt.TraceLog.Enable {
-		app.Use(TraceLog(opt.TraceLog))
+	if opt.AccessLog.Enable {
+		app.Use(AccessLog(opt.AccessLog))
 	}
 	app.Use(gin.CustomRecovery(opt.CustomRecovery))
 	if opt.Cors {
