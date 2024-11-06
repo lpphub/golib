@@ -19,14 +19,17 @@ type GormLogger struct {
 	logger    *zap.Logger
 }
 
-func NewGormLogger(db, addr string) logger.Interface {
+func NewGormLogger(db, addr string, sqlLen int) logger.Interface {
 	if ZapLogger == nil {
 		return logger.Default
+	}
+	if sqlLen == 0 {
+		sqlLen = 1024
 	}
 	return &GormLogger{
 		Database:  db,
 		Addr:      addr,
-		MaxSqlLen: 200,
+		MaxSqlLen: sqlLen,
 		logger:    ZapLogger.WithOptions(zap.AddCaller(), zap.AddCallerSkip(3)),
 	}
 }
@@ -63,7 +66,7 @@ func (l *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql 
 	}
 
 	sql, rows := fc()
-	if l.MaxSqlLen < 0 {
+	if l.MaxSqlLen <= 0 {
 		sql = ""
 	} else if len(sql) > l.MaxSqlLen {
 		sql = sql[:l.MaxSqlLen]
