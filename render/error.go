@@ -14,10 +14,6 @@ func (err Error) Error() string {
 	return err.Msg
 }
 
-func (err Error) Cause() error {
-	return errors.Cause(err)
-}
-
 func (err Error) Wrap(core error) error {
 	if core == nil {
 		return err
@@ -27,16 +23,15 @@ func (err Error) Wrap(core error) error {
 	return errors.Wrap(err, msg)
 }
 
-func (err Error) WithMessage(msg string) Error {
-	err.Msg = fmt.Sprintf("%s: %s", err.Msg, msg)
-	return err
+func (err Error) WithMessage(msg string) error {
+	return errors.WithMessage(err, msg)
 }
 
-func (err Error) Sprintf(format string, args ...interface{}) Error {
-	return err.WithMessage(fmt.Sprintf(format, args...))
+func (err Error) WithMessagef(format string, args ...interface{}) error {
+	return errors.WithMessagef(err, format, args...)
 }
 
-func (err Error) Sprintf2(v ...interface{}) Error {
-	err.Msg = fmt.Sprintf(err.Msg, v...)
+func (err Error) Sprintf(v interface{}) Error {
+	err.Msg = fmt.Sprintf("%s: %v", err.Msg, v)
 	return err
 }
