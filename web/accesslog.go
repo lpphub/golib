@@ -1,12 +1,11 @@
-package ware
+package web
 
 import (
 	"bytes"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/lpphub/golib/zlog"
-	"go.uber.org/zap"
+	"github.com/lpphub/golib/logger/glog"
 	"io"
 	"strings"
 	"time"
@@ -18,7 +17,9 @@ type AccessLogConfig struct {
 	SkipPaths []string
 }
 
-const _bodyLength = 2048
+const (
+	_bodyLength = 2048
+)
 
 func AccessLog(conf AccessLogConfig) gin.HandlerFunc {
 	var (
@@ -33,6 +34,8 @@ func AccessLog(conf AccessLogConfig) gin.HandlerFunc {
 	}
 
 	return func(ctx *gin.Context) {
+		glog.WithGinCtx(ctx)
+
 		path := ctx.Request.URL.Path
 		if _, ok := skipMap[path]; ok {
 			return
@@ -40,8 +43,6 @@ func AccessLog(conf AccessLogConfig) gin.HandlerFunc {
 
 		start := time.Now()
 		var (
-			logId = zlog.GetLogId(ctx)
-
 			reqBody  string
 			respBody string
 		)
@@ -63,16 +64,14 @@ func AccessLog(conf AccessLogConfig) gin.HandlerFunc {
 			}
 		}
 
-		fields := []zap.Field{
-			zap.String("logId", logId),
-			zap.String("url", ctx.Request.URL.Path),
-			zap.Float64("cost", getDiffTime(start, end)),
-			zap.String("clientIp", getClientIp(ctx)),
-			zap.Int("status", resp.Status()),
-			zap.String("request", reqBody),
-			zap.String("response", respBody),
-		}
-		zlog.ZapLogger.Info("access log", fields...)
+		glog.FromGinCtx(ctx).Info().
+			Str("url", path).
+			Float64("cost_ms", getDiffTime(start, end)).
+			Str("clientIp", getClientIp(ctx)).
+			Int("status", resp.Status()).
+			Str("request", reqBody).
+			Str("response", respBody).
+			Msg("access log")
 	}
 }
 
@@ -105,12 +104,12 @@ func getReqBody(c *gin.Context, maxReqBodyLen int) (reqBody string) {
 		if c.ContentType() == binding.MIMEMultipartPOSTForm {
 			requestBody, err := c.GetRawData()
 			if err != nil {
-				zlog.Warn(c, "get http request body error: "+err.Error())
+				glog.FromGinCtx(c).Err(err).Msg("get http request body error")
 			}
 			// 回写数据
 			c.Request.Body = io.NopCloser(bytes.NewBuffer(requestBody))
 			if _, err := c.MultipartForm(); err != nil {
-				zlog.Warn(c, "parse http request form body error: "+err.Error())
+				glog.FromGinCtx(c).Err(err).Msg("parse http request form body error")
 			}
 			reqBody = c.Request.PostForm.Encode()
 			// 回写数据
@@ -120,7 +119,7 @@ func getReqBody(c *gin.Context, maxReqBodyLen int) (reqBody string) {
 		} else {
 			requestBody, err := c.GetRawData()
 			if err != nil {
-				zlog.Warn(c, "get http request body error: "+err.Error())
+				glog.FromGinCtx(c).Err(err).Msg("get http request body error")
 			}
 			reqBody = bytesToStr(requestBody)
 			// 回写数据
@@ -160,4 +159,8 @@ func getClientIp(ctx *gin.Context) (clientIP string) {
 		return clientIP
 	}
 	return ctx.ClientIP()
+}
+
+func SetHeaderLogId(ctx *gin.Context) {
+	ctx.Header(glog.HeaderTraceId, glog.GetTraceId(ctx))
 }

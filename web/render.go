@@ -1,18 +1,50 @@
-package render
+package web
 
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/lpphub/golib/zlog"
 	"github.com/pkg/errors"
 	"net/http"
 	"time"
 )
 
-type JsonRender struct {
-	Errno  int         `json:"err_no"`
-	ErrMsg string      `json:"err_msg"`
-	Data   interface{} `json:"data,omitempty"`
+type (
+	Error struct {
+		Code int
+		Msg  string
+	}
+
+	JsonRender struct {
+		Errno  int         `json:"err_no"`
+		ErrMsg string      `json:"err_msg"`
+		Data   interface{} `json:"data,omitempty"`
+	}
+)
+
+func (err Error) Error() string {
+	return err.Msg
+}
+
+func (err Error) Wrap(core error) error {
+	if core == nil {
+		return err
+	}
+	msg := err.Msg
+	err.Msg = core.Error()
+	return errors.Wrap(err, msg)
+}
+
+func (err Error) WithMessage(msg string) error {
+	return errors.WithMessage(err, msg)
+}
+
+func (err Error) WithMessagef(format string, args ...interface{}) error {
+	return errors.WithMessagef(err, format, args...)
+}
+
+func (err Error) Sprintf(v interface{}) Error {
+	err.Msg = fmt.Sprintf("%s: %v", err.Msg, v)
+	return err
 }
 
 func JsonWithSuccess(ctx *gin.Context, data interface{}) {
@@ -57,6 +89,6 @@ func JsonAbortWithFail(ctx *gin.Context, code int, msg string) {
 }
 
 func commonHeader(ctx *gin.Context) {
-	zlog.SetHeaderLogId(ctx)
+	SetHeaderLogId(ctx)
 	ctx.Header("X-Resp-Time", fmt.Sprintf("%d", time.Now().UnixMilli()))
 }
