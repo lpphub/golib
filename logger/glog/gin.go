@@ -12,8 +12,10 @@ const (
 )
 
 func WithGinCtx(ctx *gin.Context) *gin.Context {
-	log := logger.Get().With().Stack().CallerWithSkipFrameCount(3).
-		Str("traceID", GetTraceId(ctx)).Logger()
+	log := logger.Get().With().CallerWithSkipFrameCount(3).
+		Str("traceID", GetTraceId(ctx)).
+		//Str("path", ctx.Request.URL.Path).
+		Logger()
 	ctx.Set(_ginLoggerKey, &log)
 	return ctx
 }

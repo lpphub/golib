@@ -2,6 +2,7 @@ package logger
 
 import (
 	"context"
+	"github.com/pkg/errors"
 	"testing"
 )
 
@@ -18,5 +19,5 @@ func TestGet(t *testing.T) {
 	ctx2 := WithCtx(context.WithValue(context.Background(), CtxTraceID, "5678"))
 	Info(ctx2, "ddd")
 
-	logger.Info().Msg("eee")
+	Err(ctx2, errors.New("err msg"), "fff")
 }

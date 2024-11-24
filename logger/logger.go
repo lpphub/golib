@@ -51,7 +51,7 @@ func Setup(opts ...LogOption) {
 				MaxAge:     14,
 				Compress:   false,
 			}
-			output = zerolog.MultiLevelWriter(os.Stderr, fileLogger)
+			output = zerolog.MultiLevelWriter(os.Stdout, fileLogger)
 		}
 
 		zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
@@ -61,6 +61,7 @@ func Setup(opts ...LogOption) {
 			With().
 			Timestamp().
 			Caller().
+			Stack().
 			Logger()
 		logger = &log
 	})
