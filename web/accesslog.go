@@ -64,7 +64,7 @@ func AccessLog(conf AccessLogConfig) gin.HandlerFunc {
 			}
 		}
 
-		glog.FromGinCtx(ctx).Info().
+		glog.FromGinCtx(ctx).Info().CallerSkipFrame(-1).
 			Str("url", path).
 			Float64("cost_ms", getDiffTime(start, end)).
 			Str("clientIp", getClientIp(ctx)).
