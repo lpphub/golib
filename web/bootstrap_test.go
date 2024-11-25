@@ -3,7 +3,7 @@ package web
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/lpphub/golib/logger"
-	"github.com/lpphub/golib/logger/glog"
+	"github.com/lpphub/golib/logger/logx"
 	"github.com/pkg/errors"
 	"net/http"
 	"testing"
@@ -25,9 +25,9 @@ func TestListenAndServe(t *testing.T) {
 	})
 
 	r.GET("/test", func(ctx *gin.Context) {
-		glog.Infof(ctx, "哈哈: %s", "bb")
+		logx.Infof(ctx, "哈哈: %s", "bb")
 
-		glog.Err(ctx, errors.New("test"), "")
+		logx.Err(ctx, errors.New("test"), "")
 
 		JsonWithSuccess(ctx, "test")
 	})

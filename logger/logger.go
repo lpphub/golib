@@ -15,6 +15,7 @@ type (
 	Logger = zerolog.Logger
 
 	LogConf struct {
+		Stdout   bool
 		Filename string
 	}
 
@@ -27,12 +28,12 @@ var (
 )
 
 func Setup(opts ...LogOption) {
-	lc := defaultLogConf()
-	for _, apply := range opts {
-		apply(lc)
-	}
-
 	once.Do(func() {
+		lc := defaultLogConf()
+		for _, apply := range opts {
+			apply(lc)
+		}
+
 		logLevel, err := strconv.Atoi(os.Getenv("LOG_LEVEL"))
 		if err != nil {
 			logLevel = int(zerolog.InfoLevel) // default to INFO
@@ -43,6 +44,10 @@ func Setup(opts ...LogOption) {
 			TimeFormat: time.RFC3339,
 		}
 
+		writers := make([]io.Writer, 0)
+		if lc.Stdout {
+			writers = append(writers, os.Stdout)
+		}
 		if lc.Filename != "" {
 			fileLogger := &lumberjack.Logger{
 				Filename:   lc.Filename,
@@ -51,7 +56,10 @@ func Setup(opts ...LogOption) {
 				MaxAge:     14,
 				Compress:   false,
 			}
-			output = zerolog.MultiLevelWriter(os.Stdout, fileLogger)
+			writers = append(writers, fileLogger)
+		}
+		if len(writers) > 0 {
+			output = zerolog.MultiLevelWriter(writers...)
 		}
 
 		zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
@@ -69,7 +77,7 @@ func Setup(opts ...LogOption) {
 
 func defaultLogConf() *LogConf {
 	return &LogConf{
-		//Filename: "app.log",
+		//Stdout: true,
 	}
 }
 

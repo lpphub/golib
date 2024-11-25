@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/lpphub/golib/logger/glog"
+	"github.com/lpphub/golib/logger/logx"
 	"io"
 	"strings"
 	"time"
@@ -34,8 +34,6 @@ func AccessLog(conf AccessLogConfig) gin.HandlerFunc {
 	}
 
 	return func(ctx *gin.Context) {
-		glog.WithGinCtx(ctx)
-
 		path := ctx.Request.URL.Path
 		if _, ok := skipMap[path]; ok {
 			return
@@ -64,7 +62,7 @@ func AccessLog(conf AccessLogConfig) gin.HandlerFunc {
 			}
 		}
 
-		glog.FromGinCtx(ctx).Info().CallerSkipFrame(-1).
+		logx.WithGinCtx(ctx).Info().CallerSkipFrame(-1).
 			Str("url", path).
 			Float64("cost_ms", getDiffTime(start, end)).
 			Str("clientIp", getClientIp(ctx)).
@@ -104,12 +102,12 @@ func getReqBody(c *gin.Context, maxReqBodyLen int) (reqBody string) {
 		if c.ContentType() == binding.MIMEMultipartPOSTForm {
 			requestBody, err := c.GetRawData()
 			if err != nil {
-				glog.FromGinCtx(c).Err(err).Msg("get http request body error")
+				logx.Err(c, err, "get http request body error")
 			}
 			// 回写数据
 			c.Request.Body = io.NopCloser(bytes.NewBuffer(requestBody))
-			if _, err := c.MultipartForm(); err != nil {
-				glog.FromGinCtx(c).Err(err).Msg("parse http request form body error")
+			if _, err = c.MultipartForm(); err != nil {
+				logx.Err(c, err, "parse http request form body error")
 			}
 			reqBody = c.Request.PostForm.Encode()
 			// 回写数据
@@ -119,7 +117,7 @@ func getReqBody(c *gin.Context, maxReqBodyLen int) (reqBody string) {
 		} else {
 			requestBody, err := c.GetRawData()
 			if err != nil {
-				glog.FromGinCtx(c).Err(err).Msg("get http request body error")
+				logx.Err(c, err, "get http request body error")
 			}
 			reqBody = bytesToStr(requestBody)
 			// 回写数据
@@ -162,5 +160,5 @@ func getClientIp(ctx *gin.Context) (clientIP string) {
 }
 
 func SetHeaderLogId(ctx *gin.Context) {
-	ctx.Header(glog.HeaderTraceId, glog.GetTraceId(ctx))
+	ctx.Header(logx.HeaderTraceId, logx.GetTraceId(ctx))
 }
