@@ -6,6 +6,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
 	"os"
+	"path/filepath"
 	"strconv"
 	"sync"
 	"time"
@@ -61,8 +62,9 @@ func Setup(opts ...LogOption) {
 			output = zerolog.MultiLevelWriter(writers...)
 		}
 
-		zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 		zerolog.TimeFieldFormat = time.RFC3339
+		zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+		zerolog.CallerMarshalFunc = Lshortfile
 		log := zerolog.New(output).
 			Level(zerolog.Level(logLevel)).
 			With().
@@ -80,8 +82,12 @@ func defaultLogConf() *LogConf {
 	}
 }
 
-func Get() *Logger {
+func Log() *Logger {
 	return logger
+}
+
+func Lshortfile(_ uintptr, file string, line int) string {
+	return filepath.Base(file) + ":" + strconv.Itoa(line)
 }
 
 func WithLogFile(logFile string) LogOption {
