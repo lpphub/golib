@@ -15,10 +15,9 @@ type (
 	Logger = zerolog.Logger
 
 	LogConf struct {
-		Stdout   bool
-		Filename string
+		Stdout  bool
+		LogFile string
 	}
-
 	LogOption func(*LogConf)
 )
 
@@ -48,9 +47,9 @@ func Setup(opts ...LogOption) {
 		if lc.Stdout {
 			writers = append(writers, os.Stdout)
 		}
-		if lc.Filename != "" {
+		if lc.LogFile != "" {
 			fileLogger := &lumberjack.Logger{
-				Filename:   lc.Filename,
+				Filename:   lc.LogFile,
 				MaxSize:    200,
 				MaxBackups: 10,
 				MaxAge:     14,
@@ -85,9 +84,9 @@ func Get() *Logger {
 	return logger
 }
 
-func WithFilename(filename string) LogOption {
+func WithLogFile(logFile string) LogOption {
 	return func(lc *LogConf) {
-		lc.Filename = filename
+		lc.LogFile = logFile
 	}
 }
 
