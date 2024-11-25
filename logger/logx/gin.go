@@ -70,7 +70,7 @@ func Tracef(ctx *gin.Context, format string, v ...interface{}) {
 
 func GetTraceId(ctx *gin.Context) string {
 	if ctx == nil {
-		return logger.GenerateLogId()
+		return logger.GenerateTraceID()
 	}
 	if tId := ctx.GetString(_ginTraceId); tId != "" {
 		return tId
@@ -81,7 +81,7 @@ func GetTraceId(ctx *gin.Context) string {
 		tId = ctx.GetHeader(HeaderTraceId)
 	}
 	if tId == "" {
-		tId = logger.GenerateLogId()
+		tId = logger.GenerateTraceID()
 	}
 	ctx.Set(_ginTraceId, tId)
 	return tId

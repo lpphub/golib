@@ -11,19 +11,28 @@ const (
 	CtxTraceID = "ctx_traceId"
 )
 
-func WithCtx(ctx context.Context) context.Context {
+func WithTraceCtx(ctx context.Context) context.Context {
 	traceID := ""
 	if tid := ctx.Value(CtxTraceID); tid != nil {
 		traceID = tid.(string)
 	} else {
-		traceID = GenerateLogId()
+		traceID = GenerateTraceID()
 	}
 
 	log := logger.With().Str("traceID", traceID).Logger()
 	return log.WithContext(ctx)
 }
 
-func FromCtx(ctx context.Context) *Logger {
+func WithCtx(ctx context.Context) *Logger {
+	if l := zerolog.Ctx(ctx); l != nil && l.GetLevel() != zerolog.Disabled {
+		return l
+	}
+
+	c := WithTraceCtx(ctx)
+	return GetOrDefault(c)
+}
+
+func GetOrDefault(ctx context.Context) *Logger {
 	if l := zerolog.Ctx(ctx); l != nil && l.GetLevel() != zerolog.Disabled {
 		return l
 	}
@@ -31,49 +40,49 @@ func FromCtx(ctx context.Context) *Logger {
 }
 
 func Info(ctx context.Context, msg string) {
-	FromCtx(ctx).Info().Msg(msg)
+	WithCtx(ctx).Info().Msg(msg)
 }
 
 func Infof(ctx context.Context, format string, v ...interface{}) {
-	FromCtx(ctx).Info().Msgf(format, v...)
+	WithCtx(ctx).Info().Msgf(format, v...)
 }
 
 func Error(ctx context.Context, msg string) {
-	FromCtx(ctx).Error().Msg(msg)
+	WithCtx(ctx).Error().Msg(msg)
 }
 
 func Errorf(ctx context.Context, format string, v ...interface{}) {
-	FromCtx(ctx).Error().Msgf(format, v...)
+	WithCtx(ctx).Error().Msgf(format, v...)
 }
 
 func Err(ctx context.Context, err error, msg string) {
-	FromCtx(ctx).Err(err).Msg(msg)
+	WithCtx(ctx).Err(err).Msg(msg)
 }
 
 func Debug(ctx context.Context, msg string) {
-	FromCtx(ctx).Debug().Msg(msg)
+	WithCtx(ctx).Debug().Msg(msg)
 }
 
 func Debugf(ctx context.Context, format string, v ...interface{}) {
-	FromCtx(ctx).Debug().Msgf(format, v...)
+	WithCtx(ctx).Debug().Msgf(format, v...)
 }
 
 func Warn(ctx context.Context, msg string) {
-	FromCtx(ctx).Warn().Msg(msg)
+	WithCtx(ctx).Warn().Msg(msg)
 }
 
 func Warnf(ctx context.Context, format string, v ...interface{}) {
-	FromCtx(ctx).Warn().Msgf(format, v...)
+	WithCtx(ctx).Warn().Msgf(format, v...)
 }
 
 func Trace(ctx context.Context, msg string) {
-	FromCtx(ctx).Trace().Msg(msg)
+	WithCtx(ctx).Trace().Msg(msg)
 }
 
 func Tracef(ctx context.Context, format string, v ...interface{}) {
-	FromCtx(ctx).Trace().Msgf(format, v...)
+	WithCtx(ctx).Trace().Msgf(format, v...)
 }
 
-func GenerateLogId() string {
+func GenerateTraceID() string {
 	return strconv.FormatUint(uint64(time.Now().UnixNano())&0x7FFFFFFF|0x80000000, 10)
 }
