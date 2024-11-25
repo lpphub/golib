@@ -90,3 +90,9 @@ func WithFilename(filename string) LogOption {
 		lc.Filename = filename
 	}
 }
+
+func WithStdout(stdout bool) LogOption {
+	return func(lc *LogConf) {
+		lc.Stdout = stdout
+	}
+}
