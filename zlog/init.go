@@ -8,7 +8,7 @@ var (
 	ZapLogger     *zap.Logger
 	SugaredLogger *zap.SugaredLogger
 
-	logConf *LogConf
+	logConf LogConf
 )
 
 func InitLog(opts ...LogOption) {

@@ -84,7 +84,7 @@ func (l *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql 
 func (l *GormLogger) commonFields(ctx context.Context) []zap.Field {
 	var logId string
 	if c, ok := ctx.(*gin.Context); ok && c != nil {
-		logId, _ = ctx.Value(KeyCtxLogId).(string)
+		logId, _ = ctx.Value(GinCtxLogId).(string)
 	}
 
 	fields := []zap.Field{

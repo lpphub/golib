@@ -15,6 +15,7 @@ import (
 
 type AccessLogConfig struct {
 	Enable    bool
+	Module    string
 	SkipPaths []string
 }
 
@@ -31,6 +32,9 @@ func AccessLog(conf AccessLogConfig) gin.HandlerFunc {
 			skipMap[path] = struct{}{}
 		}
 	}
+	if conf.Module == "" {
+		conf.Module = "app"
+	}
 
 	return func(ctx *gin.Context) {
 		path := ctx.Request.URL.Path
@@ -40,7 +44,8 @@ func AccessLog(conf AccessLogConfig) gin.HandlerFunc {
 
 		start := time.Now()
 		var (
-			logId = zlog.GetLogId(ctx)
+			logId  = zlog.GetLogId(ctx)
+			module = zlog.GetModuleWithDefault(ctx, conf.Module)
 
 			reqBody  string
 			respBody string
@@ -64,6 +69,7 @@ func AccessLog(conf AccessLogConfig) gin.HandlerFunc {
 		}
 
 		fields := []zap.Field{
+			zap.String("module", module),
 			zap.String("logId", logId),
 			zap.String("url", ctx.Request.URL.Path),
 			zap.Float64("cost", getDiffTime(start, end)),
@@ -72,7 +78,7 @@ func AccessLog(conf AccessLogConfig) gin.HandlerFunc {
 			zap.String("request", reqBody),
 			zap.String("response", respBody),
 		}
-		zlog.ZapLogger.Info("access log", fields...)
+		zlog.ZapLogger.Info("access_log", fields...)
 	}
 }
 

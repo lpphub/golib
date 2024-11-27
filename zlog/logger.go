@@ -15,7 +15,6 @@ import (
 
 const (
 	_logInfo   = "info"
-	_logError  = "error"
 	_logStdout = "stdout"
 )
 
@@ -63,30 +62,22 @@ func defaultLogConf() *LogConf {
 	}
 }
 
-func GetLogConfWithOpts(opts ...LogOption) *LogConf {
+func GetLogConfWithOpts(opts ...LogOption) LogConf {
 	lc := defaultLogConf()
 	for _, apply := range opts {
 		apply(lc)
 	}
-	return lc
+	return *lc
 }
 
 func newLogger() *zap.Logger {
 	infoLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl >= zapcore.InfoLevel && lvl >= getLogLevel(logConf.LogLevel)
 	})
-	errorLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl >= zapcore.ErrorLevel && lvl >= getLogLevel(logConf.LogLevel)
-	})
 
 	if logConf.LogPath != "" {
-		core := zapcore.NewTee(
-			zapcore.NewCore(getLogEncoder(), getLogWriter(_logInfo), infoLevel),
-			zapcore.NewCore(getLogEncoder(), getLogWriter(_logError), errorLevel),
-		)
-		return zap.New(core)
+		return zap.New(zapcore.NewCore(getLogEncoder(), getLogWriter(_logInfo), infoLevel), zap.AddStacktrace(zapcore.ErrorLevel))
 	}
-
 	// 控制台输出
 	return zap.New(zapcore.NewCore(getLogEncoder(), getLogWriter(_logStdout), getLogLevel(logConf.LogLevel)))
 }
@@ -116,11 +107,11 @@ func getLogWriter(logType string) (ws zapcore.WriteSyncer) {
 		if app == "" {
 			app = "server"
 		}
-		filename := filepath.Join(strings.TrimSuffix(logConf.LogPath, "/"), fmt.Sprintf("%s_%s.log", app, logType))
+		filename := filepath.Join(strings.TrimSuffix(logConf.LogPath, "/"), fmt.Sprintf("%s.log", app))
 		w = &lumberjack.Logger{
 			Filename:   filename,
-			MaxSize:    200,
-			MaxBackups: 5,
+			MaxSize:    400,
+			MaxBackups: 10,
 			MaxAge:     14,    // days
 			Compress:   false, // disabled by default
 		}

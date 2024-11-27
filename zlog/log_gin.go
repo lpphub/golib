@@ -6,62 +6,63 @@ import (
 )
 
 const (
-	sugaredLoggerAddr = "_sugared_addr"
+	_ginLogger = "_ctx_logger"
 )
 
-func sugaredLoggerWithCtx(ctx *gin.Context) *zap.SugaredLogger {
+func loggerWithGinCtx(ctx *gin.Context) *zap.SugaredLogger {
 	if ctx == nil {
 		return SugaredLogger
 	}
-	if t, exist := ctx.Get(sugaredLoggerAddr); exist {
+	if t, exist := ctx.Get(_ginLogger); exist {
 		if s, ok := t.(*zap.SugaredLogger); ok {
 			return s
 		}
 	}
+
 	s := SugaredLogger.With(
 		zap.String("logId", GetLogId(ctx)),
-		zap.String("url", ctx.Request.URL.Path),
+		zap.String("module", GetModuleWithDefault(ctx, "app")),
 	)
-	ctx.Set(sugaredLoggerAddr, s)
+	ctx.Set(_ginLogger, s)
 	return s
 }
 
 func Debug(ctx *gin.Context, args ...interface{}) {
-	sugaredLoggerWithCtx(ctx).Debug(args...)
+	loggerWithGinCtx(ctx).Debug(args...)
 }
 
 func Debugf(ctx *gin.Context, format string, args ...interface{}) {
-	sugaredLoggerWithCtx(ctx).Debugf(format, args...)
+	loggerWithGinCtx(ctx).Debugf(format, args...)
 }
 
 func Info(ctx *gin.Context, args ...interface{}) {
-	sugaredLoggerWithCtx(ctx).Info(args...)
+	loggerWithGinCtx(ctx).Info(args...)
 }
 
 func Infof(ctx *gin.Context, format string, args ...interface{}) {
-	sugaredLoggerWithCtx(ctx).Infof(format, args...)
+	loggerWithGinCtx(ctx).Infof(format, args...)
 }
 
 func Warn(ctx *gin.Context, args ...interface{}) {
-	sugaredLoggerWithCtx(ctx).Warn(args...)
+	loggerWithGinCtx(ctx).Warn(args...)
 }
 
 func Warnf(ctx *gin.Context, format string, args ...interface{}) {
-	sugaredLoggerWithCtx(ctx).Warnf(format, args...)
+	loggerWithGinCtx(ctx).Warnf(format, args...)
 }
 
 func Error(ctx *gin.Context, args ...interface{}) {
-	sugaredLoggerWithCtx(ctx).Error(args...)
+	loggerWithGinCtx(ctx).Error(args...)
 }
 
 func Errorf(ctx *gin.Context, format string, args ...interface{}) {
-	sugaredLoggerWithCtx(ctx).Errorf(format, args...)
+	loggerWithGinCtx(ctx).Errorf(format, args...)
 }
 
 func Fatal(ctx *gin.Context, args ...interface{}) {
-	sugaredLoggerWithCtx(ctx).Fatal(args...)
+	loggerWithGinCtx(ctx).Fatal(args...)
 }
 
 func Fatalf(ctx *gin.Context, format string, args ...interface{}) {
-	sugaredLoggerWithCtx(ctx).Fatalf(format, args...)
+	loggerWithGinCtx(ctx).Fatalf(format, args...)
 }
