@@ -15,7 +15,7 @@ func TestPrint(t *testing.T) {
 	logger.Warn(ctx, "bbb")
 	logger.Error(ctx, "ccc")
 
-	logger.FromCtx(ctx).Info().CallerSkipFrame(-1).Msgf("print: %s", "test")
+	logger.FromCtx(ctx).Info().Msgf("print: %s", "test")
 
 	ctx2 := logger.WithCtx(context.WithValue(context.Background(), logger.TraceID, "5678"))
 	logger.Info(ctx2, "ddd")

@@ -19,7 +19,7 @@ func WithCtx(ctx context.Context) context.Context {
 		traceID = GenerateTraceID()
 	}
 
-	log := logger.With().CallerWithSkipFrameCount(3).Str("traceID", traceID).Logger()
+	log := logger.With().Str("traceID", traceID).Logger()
 	return log.WithContext(ctx)
 }
 
@@ -31,19 +31,19 @@ func FromCtx(ctx context.Context) *Logger {
 }
 
 func Info(ctx context.Context, msg string) {
-	FromCtx(ctx).Info().Msg(msg)
+	FromCtx(ctx).Info().CallerSkipFrame(1).Msg(msg)
 }
 
 func Infof(ctx context.Context, format string, v ...interface{}) {
-	FromCtx(ctx).Info().Msgf(format, v...)
+	FromCtx(ctx).Info().CallerSkipFrame(1).Msgf(format, v...)
 }
 
 func Error(ctx context.Context, msg string) {
-	FromCtx(ctx).Error().Msg(msg)
+	FromCtx(ctx).Error().CallerSkipFrame(1).Msg(msg)
 }
 
 func Errorf(ctx context.Context, format string, v ...interface{}) {
-	FromCtx(ctx).Error().Msgf(format, v...)
+	FromCtx(ctx).Error().CallerSkipFrame(1).Msgf(format, v...)
 }
 
 func Err(ctx context.Context, err error, msg string) {
@@ -51,27 +51,27 @@ func Err(ctx context.Context, err error, msg string) {
 }
 
 func Debug(ctx context.Context, msg string) {
-	FromCtx(ctx).Debug().Msg(msg)
+	FromCtx(ctx).Debug().CallerSkipFrame(1).Msg(msg)
 }
 
 func Debugf(ctx context.Context, format string, v ...interface{}) {
-	FromCtx(ctx).Debug().Msgf(format, v...)
+	FromCtx(ctx).Debug().CallerSkipFrame(1).Msgf(format, v...)
 }
 
 func Warn(ctx context.Context, msg string) {
-	FromCtx(ctx).Warn().Msg(msg)
+	FromCtx(ctx).Warn().CallerSkipFrame(1).Msg(msg)
 }
 
 func Warnf(ctx context.Context, format string, v ...interface{}) {
-	FromCtx(ctx).Warn().Msgf(format, v...)
+	FromCtx(ctx).Warn().CallerSkipFrame(1).Msgf(format, v...)
 }
 
 func Trace(ctx context.Context, msg string) {
-	FromCtx(ctx).Trace().Msg(msg)
+	FromCtx(ctx).Trace().CallerSkipFrame(1).Msg(msg)
 }
 
 func Tracef(ctx context.Context, format string, v ...interface{}) {
-	FromCtx(ctx).Trace().Msgf(format, v...)
+	FromCtx(ctx).Trace().CallerSkipFrame(1).Msgf(format, v...)
 }
 
 func GenerateTraceID() string {
