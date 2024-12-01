@@ -47,7 +47,7 @@ func Errorf(ctx context.Context, format string, v ...interface{}) {
 }
 
 func Err(ctx context.Context, err error, msg string) {
-	FromCtx(ctx).Err(err).Caller(-1).Msg(msg)
+	FromCtx(ctx).Error().Caller(-1).Err(err).Msg(msg)
 }
 
 func Debug(ctx context.Context, msg string) {
