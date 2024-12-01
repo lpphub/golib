@@ -14,7 +14,7 @@ func TestLog(t *testing.T) {
 	Warn(ctx, "bbb")
 	Error(ctx, "ccc")
 
-	FromCtx(ctx).Info().Msgf("print: %s", "test")
+	FromCtx(ctx).Info().CallerSkipFrame(-1).Msgf("print: %s", "test")
 
 	ctx2 := WithCtx(context.WithValue(context.Background(), TraceID, "5678"))
 	Info(ctx2, "ddd")

@@ -69,7 +69,7 @@ func Setup(opts ...LogOption) {
 			Level(zerolog.Level(logLevel)).
 			With().
 			Timestamp().
-			CallerWithSkipFrameCount(3).
+			Caller().
 			Stack().
 			Logger()
 		logger = &log
