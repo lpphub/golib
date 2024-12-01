@@ -19,7 +19,7 @@ func WithTraceCtx(ctx context.Context) context.Context {
 		traceID = GenerateTraceID()
 	}
 
-	log := logger.With().Str("traceID", traceID).Logger()
+	log := logger.With().CallerWithSkipFrameCount(3).Str("traceID", traceID).Logger()
 	return log.WithContext(ctx)
 }
 
