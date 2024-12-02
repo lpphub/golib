@@ -1,4 +1,4 @@
-package ware
+package web
 
 import (
 	"context"
