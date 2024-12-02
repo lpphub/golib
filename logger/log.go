@@ -64,7 +64,7 @@ func Setup(opts ...LogOption) {
 
 		zerolog.TimeFieldFormat = time.RFC3339
 		zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
-		zerolog.CallerMarshalFunc = Lshortfile
+		//zerolog.CallerMarshalFunc = Lshortfile
 		log := zerolog.New(output).
 			Level(zerolog.Level(logLevel)).
 			With().
