@@ -40,9 +40,9 @@ func Default() *Pool {
 	options := ants.Options{
 		ExpiryDuration: ExpiryDuration,
 		Nonblocking:    Nonblocking,
-		Logger:         &antsLogger{logger.Get()},
+		Logger:         &antsLogger{logger.Log()},
 		PanicHandler: func(i interface{}) {
-			logger.Get().Error().Msgf("goroutine pool panic: %v", i)
+			logger.Log().Error().Msgf("goroutine pool panic: %v", i)
 		},
 	}
 	defaultAntsPool, _ := ants.NewPool(DefaultAntsPoolSize, ants.WithOptions(options))
