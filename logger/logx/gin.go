@@ -12,6 +12,9 @@ const (
 )
 
 func FromGinCtx(ctx *gin.Context) *logger.Logger {
+	if ctx == nil {
+		return logger.Log()
+	}
 	if l := ctx.Value(_ginLogger); l != nil {
 		return l.(*logger.Logger)
 	}
