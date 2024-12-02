@@ -19,7 +19,7 @@ func WithCtx(ctx context.Context) context.Context {
 		traceID = GenerateTraceID()
 	}
 
-	log := logger.With().Str("traceID", traceID).Caller().Logger()
+	log := logger.With().Str("traceID", traceID).Logger()
 	return log.WithContext(ctx)
 }
 
@@ -31,47 +31,47 @@ func FromCtx(ctx context.Context) *Logger {
 }
 
 func Info(ctx context.Context, msg string) {
-	FromCtx(ctx).Info().CallerSkipFrame(1).Msg(msg)
+	FromCtx(ctx).Info().Caller(1).Msg(msg)
 }
 
 func Infof(ctx context.Context, format string, v ...interface{}) {
-	FromCtx(ctx).Info().CallerSkipFrame(1).Msgf(format, v...)
+	FromCtx(ctx).Info().Caller(1).Msgf(format, v...)
 }
 
 func Error(ctx context.Context, msg string) {
-	FromCtx(ctx).Error().CallerSkipFrame(1).Msg(msg)
+	FromCtx(ctx).Error().Caller(1).Msg(msg)
 }
 
 func Errorf(ctx context.Context, format string, v ...interface{}) {
-	FromCtx(ctx).Error().CallerSkipFrame(1).Msgf(format, v...)
+	FromCtx(ctx).Error().Caller(1).Msgf(format, v...)
 }
 
 func Err(ctx context.Context, err error, msg string) {
-	FromCtx(ctx).Err(err).CallerSkipFrame(1).Msg(msg)
+	FromCtx(ctx).Err(err).Caller(1).Msg(msg)
 }
 
 func Debug(ctx context.Context, msg string) {
-	FromCtx(ctx).Debug().CallerSkipFrame(1).Msg(msg)
+	FromCtx(ctx).Debug().Caller(1).Msg(msg)
 }
 
 func Debugf(ctx context.Context, format string, v ...interface{}) {
-	FromCtx(ctx).Debug().CallerSkipFrame(1).Msgf(format, v...)
+	FromCtx(ctx).Debug().Caller(1).Msgf(format, v...)
 }
 
 func Warn(ctx context.Context, msg string) {
-	FromCtx(ctx).Warn().CallerSkipFrame(1).Msg(msg)
+	FromCtx(ctx).Warn().Caller(1).Msg(msg)
 }
 
 func Warnf(ctx context.Context, format string, v ...interface{}) {
-	FromCtx(ctx).Warn().CallerSkipFrame(1).Msgf(format, v...)
+	FromCtx(ctx).Warn().Caller(1).Msgf(format, v...)
 }
 
 func Trace(ctx context.Context, msg string) {
-	FromCtx(ctx).Trace().CallerSkipFrame(1).Msg(msg)
+	FromCtx(ctx).Trace().Caller(1).Msg(msg)
 }
 
 func Tracef(ctx context.Context, format string, v ...interface{}) {
-	FromCtx(ctx).Trace().CallerSkipFrame(1).Msgf(format, v...)
+	FromCtx(ctx).Trace().Caller(1).Msgf(format, v...)
 }
 
 func GenerateTraceID() string {

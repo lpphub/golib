@@ -12,7 +12,7 @@ func TestPrint(t *testing.T) {
 
 	ctx := logger.WithCtx(context.Background())
 	logger.Infof(ctx, "print: %s", "aaa")
-	logger.Warn(ctx, "bbb")
+	logger.Info(ctx, "bbb")
 	logger.Error(ctx, "ccc")
 
 	logger.FromCtx(ctx).Info().Msgf("print: %s", "test")
