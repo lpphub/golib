@@ -66,13 +66,14 @@ func AccessLog(conf AccessLogConfig) gin.HandlerFunc {
 		}
 
 		logx.FromGinCtx(ctx).Info().CallerSkipFrame(-1).
+			Str("module", conf.Module).
 			Str("url", path).
 			Float64("cost_ms", getDiffTime(start, end)).
 			Str("clientIp", getClientIp(ctx)).
 			Int("status", resp.Status()).
 			Str("request", reqBody).
 			Str("response", respBody).
-			Msg("access log")
+			Msg("access_log")
 	}
 }
 
