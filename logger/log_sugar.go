@@ -24,6 +24,9 @@ func WithCtx(ctx context.Context) context.Context {
 }
 
 func FromCtx(ctx context.Context) *Logger {
+	if ctx == nil {
+		return logger
+	}
 	if l := zerolog.Ctx(ctx); l != nil && l.GetLevel() != zerolog.Disabled {
 		return l
 	}
