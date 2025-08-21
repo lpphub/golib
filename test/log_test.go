@@ -2,9 +2,10 @@ package test
 
 import (
 	"context"
+	"testing"
+
 	"github.com/lpphub/golib/logger"
 	"github.com/pkg/errors"
-	"testing"
 )
 
 func TestPrint(t *testing.T) {

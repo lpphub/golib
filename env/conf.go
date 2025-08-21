@@ -1,8 +1,9 @@
 package env
 
 import (
-	"github.com/spf13/viper"
 	"path/filepath"
+
+	"github.com/spf13/viper"
 )
 
 func LoadConf(filename string, s interface{}) {

@@ -2,9 +2,10 @@ package logger
 
 import (
 	"context"
-	"github.com/rs/zerolog"
 	"strconv"
 	"time"
+
+	"github.com/rs/zerolog"
 )
 
 const (

@@ -1,22 +1,23 @@
-package gowork
+package utils
 
 import (
-	"github.com/lpphub/golib/logger"
-	"github.com/panjf2000/ants/v2"
 	"sync"
 	"time"
+
+	"github.com/lpphub/golib/logger"
+	"github.com/panjf2000/ants/v2"
 )
 
 const (
-	// DefaultAntsPoolSize sets up the capacity of worker pool, 256 * 1024.
-	DefaultAntsPoolSize = 1 << 18
+	// AntPoolDefaultSize sets up the capacity of worker pool, 256 * 1024.
+	AntPoolDefaultSize = 1 << 18
 
-	// ExpiryDuration is the interval time to clean up those expired workers.
-	ExpiryDuration = 10 * time.Second
+	// AntExpiryDuration is the interval time to clean up those expired workers.
+	AntExpiryDuration = 10 * time.Second
 
-	// Nonblocking decides what to do when submitting a new task to a full worker pool: waiting for a available worker
+	// AntNonblocking decides what to do when submitting a new task to a full worker pool: waiting for a available worker
 	// or returning nil directly.
-	Nonblocking = true
+	AntNonblocking = true
 )
 
 func init() {
@@ -36,13 +37,13 @@ var (
 func Default() *Pool {
 	once.Do(func() {
 		options := defaultOpt()
-		defaultAntsPool, _ = ants.NewPool(DefaultAntsPoolSize, ants.WithOptions(options))
+		defaultAntsPool, _ = ants.NewPool(AntPoolDefaultSize, ants.WithOptions(options))
 	})
 	return defaultAntsPool
 }
 
 func NewPool(size int) *Pool {
-	if size <= 0 || size > DefaultAntsPoolSize {
+	if size <= 0 || size > AntPoolDefaultSize {
 		return defaultAntsPool
 	}
 	options := defaultOpt()
@@ -52,8 +53,8 @@ func NewPool(size int) *Pool {
 
 func defaultOpt() ants.Options {
 	return ants.Options{
-		ExpiryDuration: ExpiryDuration,
-		Nonblocking:    Nonblocking,
+		ExpiryDuration: AntExpiryDuration,
+		Nonblocking:    AntNonblocking,
 		Logger:         logger.Log(),
 		PanicHandler: func(i interface{}) {
 			logger.Log().Error().Msgf("goroutine pool panic: %v", i)
