@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	_ginLogger    = "_ctx_logger"
-	_ginTraceId   = "_ctx_trace_id"
-	HeaderTraceId = "X-Trace-Id"
+	_ginLogger  = "_ctx_logger"
+	_ginLogId   = "_ctx_log_id"
+	HeaderLogId = "X-Trace-logId"
 )
 
 func FromGinCtx(ctx *gin.Context) *logger.Logger {
@@ -19,7 +19,7 @@ func FromGinCtx(ctx *gin.Context) *logger.Logger {
 		return l.(*logger.Logger)
 	}
 
-	log := logger.Log().With().CallerWithSkipFrameCount(3).Str("traceID", GetTraceId(ctx)).Logger()
+	log := logger.Log().With().CallerWithSkipFrameCount(3).Str("logId", GetLogId(ctx)).Logger()
 	ctx.Set(_ginLogger, &log)
 	return &log
 }
@@ -68,21 +68,21 @@ func Tracef(ctx *gin.Context, format string, v ...interface{}) {
 	FromGinCtx(ctx).Trace().Msgf(format, v...)
 }
 
-func GetTraceId(ctx *gin.Context) string {
+func GetLogId(ctx *gin.Context) string {
 	if ctx == nil {
-		return logger.GenerateTraceID()
+		return logger.GenerateLogId()
 	}
-	if tId := ctx.GetString(_ginTraceId); tId != "" {
+	if tId := ctx.GetString(_ginLogId); tId != "" {
 		return tId
 	}
 	// 尝试从header中获取
 	var tId string
 	if ctx.Request != nil && ctx.Request.Header != nil {
-		tId = ctx.GetHeader(HeaderTraceId)
+		tId = ctx.GetHeader(HeaderLogId)
 	}
 	if tId == "" {
-		tId = logger.GenerateTraceID()
+		tId = logger.GenerateLogId()
 	}
-	ctx.Set(_ginTraceId, tId)
+	ctx.Set(_ginLogId, tId)
 	return tId
 }

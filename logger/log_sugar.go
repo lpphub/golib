@@ -9,18 +9,18 @@ import (
 )
 
 const (
-	TraceID = "ctx_traceId"
+	LogId = "ctx_logId"
 )
 
 func WithCtx(ctx context.Context) context.Context {
-	traceID := ""
-	if tid := ctx.Value(TraceID); tid != nil {
-		traceID = tid.(string)
+	logId := ""
+	if tid := ctx.Value(LogId); tid != nil {
+		logId = tid.(string)
 	} else {
-		traceID = GenerateTraceID()
+		logId = GenerateLogId()
 	}
 
-	log := logger.With().Str("traceID", traceID).Logger()
+	log := logger.With().Str("logId", logId).Logger()
 	return log.WithContext(ctx)
 }
 
@@ -78,6 +78,6 @@ func Tracef(ctx context.Context, format string, v ...interface{}) {
 	FromCtx(ctx).Trace().Caller(1).Msgf(format, v...)
 }
 
-func GenerateTraceID() string {
+func GenerateLogId() string {
 	return strconv.FormatUint(uint64(time.Now().UnixNano())&0x7FFFFFFF|0x80000000, 10)
 }

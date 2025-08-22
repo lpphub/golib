@@ -18,7 +18,7 @@ func TestPrint(t *testing.T) {
 
 	logger.FromCtx(ctx).Info().Msgf("print: %s", "test")
 
-	ctx2 := logger.WithCtx(context.WithValue(context.Background(), logger.TraceID, "5678"))
+	ctx2 := logger.WithCtx(context.WithValue(context.Background(), logger.LogId, "5678"))
 	logger.Info(ctx2, "ddd")
 
 	logger.Err(context.Background(), errors.New("err msg"), "fff")

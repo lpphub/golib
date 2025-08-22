@@ -45,6 +45,9 @@ func AccessLog(conf AccessLogConfig) gin.HandlerFunc {
 		}
 
 		start := time.Now()
+
+		logx.GetLogId(ctx)
+
 		var (
 			reqBody  string
 			respBody string
@@ -165,5 +168,5 @@ func getClientIp(ctx *gin.Context) (clientIP string) {
 }
 
 func SetHeaderLogId(ctx *gin.Context) {
-	ctx.Header(logx.HeaderTraceId, logx.GetTraceId(ctx))
+	ctx.Header(logx.HeaderLogId, logx.GetLogId(ctx))
 }
