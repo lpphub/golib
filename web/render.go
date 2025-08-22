@@ -2,10 +2,11 @@ package web
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 )
 
 type (
@@ -15,9 +16,9 @@ type (
 	}
 
 	JsonRender struct {
-		Errno  int         `json:"err_no"`
-		ErrMsg string      `json:"err_msg"`
-		Data   interface{} `json:"data,omitempty"`
+		Code int         `json:"code"`
+		Msg  string      `json:"msg"`
+		Data interface{} `json:"data,omitempty"`
 	}
 )
 
@@ -49,9 +50,9 @@ func (err Error) Sprintf(v interface{}) Error {
 
 func JsonWithSuccess(ctx *gin.Context, data interface{}) {
 	r := &JsonRender{
-		Errno:  0,
-		ErrMsg: "success",
-		Data:   data,
+		Code: 0,
+		Msg:  "success",
+		Data: data,
 	}
 	commonHeader(ctx)
 	ctx.JSON(http.StatusOK, r)
@@ -67,8 +68,8 @@ func JsonWithError(ctx *gin.Context, err error) {
 	}
 
 	r := &JsonRender{
-		Errno:  code,
-		ErrMsg: msg,
+		Code: code,
+		Msg:  msg,
 	}
 	commonHeader(ctx)
 	ctx.AbortWithStatusJSON(http.StatusOK, r)
@@ -76,8 +77,8 @@ func JsonWithError(ctx *gin.Context, err error) {
 
 func JsonWithFail(ctx *gin.Context, code int, msg string) {
 	r := &JsonRender{
-		Errno:  code,
-		ErrMsg: msg,
+		Code: code,
+		Msg:  msg,
 	}
 	commonHeader(ctx)
 	ctx.JSON(http.StatusOK, r)

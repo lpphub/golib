@@ -3,13 +3,14 @@ package web
 import (
 	"bytes"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
-	"github.com/lpphub/golib/logger/logx"
 	"io"
 	"strings"
 	"time"
 	"unsafe"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/lpphub/golib/logger/logx"
 )
 
 type AccessLogConfig struct {

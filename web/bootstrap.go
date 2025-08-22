@@ -3,14 +3,15 @@ package web
 import (
 	"context"
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/lpphub/golib/env"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/lpphub/golib/env"
 )
 
 type BootstrapConf struct {

@@ -1,12 +1,13 @@
 package web
 
 import (
+	"net/http"
+	"testing"
+
 	"github.com/gin-gonic/gin"
 	"github.com/lpphub/golib/logger"
 	"github.com/lpphub/golib/logger/logx"
 	"github.com/pkg/errors"
-	"net/http"
-	"testing"
 )
 
 func TestListenAndServe(t *testing.T) {
